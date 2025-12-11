@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ token, session }) {
       if (token) {
         session.user._id = token._id;
         session.user.username = token.username;
@@ -75,7 +75,7 @@ export const authOptions: NextAuthOptions = {
 
   pages: {
     signIn: "/sign-in",
-  },
+  }, 
 
   session: {
     strategy: "jwt",

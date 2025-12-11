@@ -29,7 +29,10 @@ export async function POST(request: Request) {
     if (userExistWithEmail) {
       if (userExistWithEmail.isVerified) {
         return Response.json(
-          { success: false, message: "user already exists with this email" },
+          {
+            success: false,
+            message: "user already exists with this email and verified",
+          },
           { status: 400 }
         );
       } else {
