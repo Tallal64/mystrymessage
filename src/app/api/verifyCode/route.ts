@@ -6,7 +6,7 @@ export async function GET(request: Request) {
 
   try {
     const { username, code } = await request.json();
-    const decodedUsername = decodeURIComponent(username); // for URL encoded usernames
+    const decodedUsername = decodeURIComponent(username); // for URL encoded username
 
     const user = await UserModel.findOne({
       username: decodedUsername,
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     }
 
     const isCodeValid = user.verifyCode === code; // Check if the provided code matches
-    const isCodeNotExpired = user.verifyCodeExpiry > new Date(); // Check if the code is not expired
+    const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date(); // Check if the code is not expired
 
     if (isCodeValid && isCodeNotExpired) {
       user.isVerified = true;
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
         },
         { status: 200 }
       );
-    } else if (!isCodeValid) {
+    } else if (!isCodeNotExpired) {
       return Response.json(
         {
           success: false,

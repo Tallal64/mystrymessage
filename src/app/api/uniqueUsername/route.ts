@@ -1,9 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import { usernameValidation } from "@/schemas/signUpSchema";
-import z, { success } from "zod"; // !POSSIBLE ERROR => z to {z}
+import z from "zod"; // !POSSIBLE ERROR => z to {z}
 
-const usernameQuesrySchema = z.object({
+const usernameQuerySchema = z.object({
   username: usernameValidation,
 });
 
@@ -16,8 +16,8 @@ export async function GET(request: Request) {
       username: searchParams.get("username"),
     };
 
-    const result = usernameQuesrySchema.safeParse(queryParam);
-    console.log(result);
+    const result = usernameQuerySchema.safeParse(queryParam);
+    console.log(result); // TODO: remove debug log
 
     if (!result.success) {
       const usernameErrors = result.error.format().username?._errors || [];
