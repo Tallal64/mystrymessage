@@ -36,12 +36,12 @@ export async function GET(request: Request) {
 
     const { username } = result.data;
 
-    const exisitingVerifeidUser = await UserModel.findOne({
+    const exisitingVerifiedUser = await UserModel.findOne({
       username,
       isVerified: true,
     });
 
-    if (exisitingVerifeidUser) {
+    if (exisitingVerifiedUser) {
       return Response.json(
         {
           success: false,
