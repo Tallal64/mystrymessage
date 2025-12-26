@@ -3,6 +3,7 @@ import { getServerSession, User } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
 import UserModel from "@/model/User";
 
+// API route to accept or decline messages
 export async function POST(request: Request) {
   await dbConnect();
 
@@ -27,7 +28,7 @@ export async function POST(request: Request) {
   try {
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
-      { isAcceptingMessage: acceptMessages },
+      { isAcceptingMessages: acceptMessages },
       { new: true }
     );
 
@@ -62,6 +63,7 @@ export async function POST(request: Request) {
   }
 }
 
+// API route to get the current user's message acceptance status
 export async function GET(request: Request) {
   try {
     await dbConnect();
@@ -96,7 +98,7 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        isAcceptingMessage: userFound.isAcceptingMessage,
+        isAcceptingMessages: userFound.isAcceptingMessages,
       },
       { status: 200 }
     );
