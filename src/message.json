@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Message from user123",
+    "content": "Hello! Welcome to our application. We're glad to have you here.",
+    "received": "10 minutes ago"
+  },
+  {
+    "title": "Message from admin",
+    "content": "I really like your feedback on the new features we rolled out last week.",
+    "received": "1 hour ago"
+  },
+  {
+    "title": "Message from support",
+    "content": "Your issue has been resolved. Please check your account for updates.",
+    "received": "Yesterday"
+  }
+]
