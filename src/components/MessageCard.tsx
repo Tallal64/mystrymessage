@@ -2,10 +2,7 @@
 
 import {
   Card,
-  CardAction,
-  CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -22,12 +19,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { Button } from "./ui/button";
-import axios from "axios";
-import { Message } from "@/model/User";
 import { X } from "lucide-react";
+import { Button } from "./ui/button";
+import { Message } from "@/model/User";
 import { toast } from "sonner";
 import { ApiResponse } from "@/types/ApiResponse";
+import dayjs from "dayjs";
+import axios, { AxiosError } from "axios";
 
 type MessageCardProps = {
   message: Message;
@@ -39,50 +37,62 @@ export default function MessageCard({
   onMessageDelete,
 }: MessageCardProps) {
   const DeleteMessageConfirmation = async () => {
-    const response = await axios.delete<ApiResponse>(
-      `/api/delete-message/${message._id}`
-    );
-    toast.success(response.data.message);
-    onMessageDelete(message._id.toString());
+    try {
+      const response = await axios.delete(`/api/delete-message/${message._id}`);
+      toast.success(response.data.message);
+      onMessageDelete(message._id.toString());
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(
+        axiosError.response?.data.message || "Failed to delete message."
+      );
+    }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        {/* alert dialog */}
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="outline">
-              <X className="w-5 h-5" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your
-                account and remove your data from our servers.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={DeleteMessageConfirmation}>
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+    <Card className="relative w-full max-w-md shadow-sm">
+      <CardHeader className="pr-14">
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <CardTitle className="mb-2 font-medium text-lg">
+              {message.message}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              {dayjs(message.createdAt).format("MMM D, YYYY h:mm A")}
+            </CardDescription>
+          </div>
 
-        <CardDescription>Card Description</CardDescription>
-        <CardAction>Card Action</CardAction>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-4 right-4"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Card?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Are you sure you want to delete this card? This action cannot
+                  be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={DeleteMessageConfirmation}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
-      <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter>
     </Card>
   );
 }

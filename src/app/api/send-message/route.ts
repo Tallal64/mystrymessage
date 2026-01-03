@@ -5,7 +5,7 @@ import { Message } from "@/model/User";
 export async function POST(request: Request) {
   try {
     await dbConnect();
-    const { username, content } = await request.json();
+    const { username, message } = await request.json();
     const user = await UserModel.findOne({ username });
 
     if (!user) {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const newMessage = { content, createdAt: new Date() };
+    const newMessage = { message, createdAt: new Date() };
     user.messages.push(newMessage as unknown as Message);
     await user.save();
 
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error sending message:", error);
+    console.error("Error sending message from backend:", error);
     return Response.json(
       { success: false, message: "Error sending message" },
       { status: 500 }

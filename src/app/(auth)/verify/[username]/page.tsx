@@ -47,10 +47,10 @@ export default function VerifyAccount() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="w-full max-w-md p-8 space-y-8 border rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 capitalize">
+          <h1 className="mb-6 text-4xl font-extrabold tracking-tight capitalize lg:text-5xl">
             Verify Your Account
           </h1>
           <p className="mb-4">Enter the verification code sent to your email</p>

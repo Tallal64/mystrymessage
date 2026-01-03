@@ -1,3 +1,5 @@
+"use client";
+
 import { Message } from "@/model/User";
 import { acceptMessagesSchema } from "@/schemas/acceptMessageSchema";
 import { ApiResponse } from "@/types/ApiResponse";
@@ -6,19 +8,21 @@ import { useSession } from "next-auth/react";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import axios, { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
-import MessageCard from "@/components/MessageCard";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { User } from "next-auth";
+import axios, { AxiosError } from "axios";
+import MessageCard from "@/components/MessageCard";
 
 export default function page() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
+  const [profileUrl, setProfileUrl] = useState("");
 
+  // TODO: implement the AI feature suggest messages
   const handleDeleteMessage = (messageId: string) => {
     // If the result is True (The IDs do NOT match), the message stays in the new list.
     // If the result is False (The IDs match), the message is "filtered out" and discarded.
@@ -58,8 +62,8 @@ export default function page() {
       setIsLoading(true);
       setIsSwitchLoading(true);
       try {
-        const response = await axios.get<ApiResponse>("/api/accept-messages");
-        setMessages(response.data.messages || []);
+        const response = await axios.get("/api/get-messages");
+        setMessages(response.data.message || []);
         if (refresh) {
           toast.success("Messages refreshed successfully.");
         }
@@ -102,9 +106,11 @@ export default function page() {
     }
   };
 
-  const { username } = session?.user as User;
-  const baseUrl = window.location.origin;
-  const profileUrl = `${baseUrl}/m/${username}`;
+  useEffect(() => {
+    const username = session?.user?.username as User;
+    const baseUrl = window.location.origin;
+    setProfileUrl(`${baseUrl}/u/${username}`);
+  }, [session]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
@@ -120,17 +126,17 @@ export default function page() {
   }
 
   return (
-    <div className="my-8 mx-4 md:mx-8 lg:mx-auto p-6 bg-white rounded w-full max-w-6xl">
-      <h1 className="text-4xl font-bold mb-4">User Dashboard</h1>
+    <div className="w-full max-w-6xl p-6 mx-4 my-8 rounded md:mx-8 lg:mx-auto">
+      <h1 className="mb-4 text-4xl font-bold">User Dashboard</h1>
 
       <div className="mb-4">
-        <h2 className="text-lg font-semibold mb-2">Copy Your Unique Link</h2>{" "}
+        <h2 className="mb-2 text-lg font-semibold">Copy Your Unique Link</h2>{" "}
         <div className="flex items-center">
           <input
             type="text"
             value={profileUrl}
             disabled
-            className="input input-bordered w-full p-2 mr-2"
+            className="w-full p-2 mr-2 input input-bordered"
           />
           <Button onClick={copyToClipboard}>Copy</Button>
         </div>
@@ -149,6 +155,10 @@ export default function page() {
       </div>
       <Separator />
 
+      <div>
+        <h2 className="mt-6 mb-2 text-2xl font-semibold">Your Messages</h2>
+      </div>
+
       <Button
         className="mt-4"
         variant="outline"
@@ -158,12 +168,12 @@ export default function page() {
         }}
       >
         {isLoading ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
-          <RefreshCcw className="h-4 w-4" />
+          <RefreshCcw className="w-4 h-4" />
         )}
       </Button>
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2">
         {messages.length > 0 ? (
           messages.map((message) => (
             <MessageCard
